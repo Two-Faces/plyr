@@ -731,11 +731,33 @@ const controls = {
     tipElement.innerText = controls.formatTime(time);
 
     // Get marker point for time
-    const point = this.config.markers?.points?.find(({ time: t }) => t === Math.round(time));
+    const point = this.config.markers?.points?.filter(({ time: t }) => t <= Math.round(time)).at(-1);
 
     // Append the point label to the tooltip
     if (point) {
-      tipElement.insertAdjacentHTML('afterbegin', `${point.label}<br>`);
+      const { label } = point;
+
+      if (this.config.previewThumbnails.enabled) {
+        if (!this.elements.display.markerContainer) {
+          const container = this.elements.progress.querySelector(
+            `.${this.config.classNames.previewThumbnails.thumbContainer}`,
+          );
+
+          const element = createElement('div', {
+            class: this.config.classNames.previewThumbnails.markerContainer,
+          });
+
+          this.elements.display.markerContainer = element;
+
+          container.prepend(element);
+        }
+
+        if (this.elements.display.markerContainer.innerHTML !== label) {
+          this.elements.display.markerContainer.innerHTML = label;
+        }
+      } else {
+        tipElement.insertAdjacentHTML('afterbegin', `${label}<br>`);
+      }
     }
 
     // Set position

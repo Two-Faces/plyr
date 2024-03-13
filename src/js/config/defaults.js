@@ -387,6 +387,7 @@ const defaults = {
       thumbContainer: 'plyr__preview-thumb',
       thumbContainerShown: 'plyr__preview-thumb--is-shown',
       imageContainer: 'plyr__preview-thumb__image-container',
+      markerContainer: 'plyr__preview-thumb__marker-container',
       timeContainer: 'plyr__preview-thumb__time-container',
       // Scrubbing
       scrubbingContainer: 'plyr__preview-scrubbing',
@@ -415,6 +416,7 @@ const defaults = {
   previewThumbnails: {
     enabled: false,
     src: '',
+    withCredentials: false,
   },
 
   // Vimeo plugin

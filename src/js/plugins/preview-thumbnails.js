@@ -168,7 +168,7 @@ class PreviewThumbnails {
   // Process individual VTT file
   getThumbnail = (url) => {
     return new Promise((resolve) => {
-      fetch(url).then((response) => {
+      fetch(url, undefined, this.player.config.previewThumbnails.withCredentials).then((response) => {
         const thumbnail = {
           frames: parseVtt(response),
           height: null,
@@ -177,7 +177,7 @@ class PreviewThumbnails {
 
         // If the URLs don't start with '/', then we need to set their relative path to be the location of the VTT file
         // If the URLs do start with '/', then they obviously don't need a prefix, so it will remain blank
-        // If the thumbnail URLs start with with none of '/', 'http://' or 'https://', then we need to set their relative path to be the location of the VTT file
+        // If the thumbnail URLs start with none of '/', 'http://' or 'https://', then we need to set their relative path to be the location of the VTT file
         if (
           !thumbnail.frames[0].text.startsWith('/') &&
           !thumbnail.frames[0].text.startsWith('http://') &&

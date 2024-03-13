@@ -39,6 +39,23 @@
     z-index: 2;
   }
 
+  &__marker-container {
+    font-size: 10px;
+    left: 0;
+    line-height: 1.1;
+    padding: 6px;
+    position: absolute;
+    text-align: center;
+    top: 6px;
+    z-index: 4;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+    right: 0;
+    margin: auto 6px;
+    width: fit-content;
+    justify-self: center;
+  }
+
   &__image-container {
     background: $plyr-preview-image-background;
     border-radius: calc(#{$plyr-preview-radius} - 1px);
