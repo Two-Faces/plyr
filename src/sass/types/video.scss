@@ -117,9 +117,13 @@ $embed-padding: (math.div(100, 16) * 9);
   }
 }
 
-.plyr--playing .plyr__control--overlaid {
+.plyr--playing.plyr--hide-controls .plyr__control--overlaid {
   opacity: 0;
   visibility: hidden;
+}
+
+.plyr--playing .plyr__control--overlaid svg {
+  left: 0;
 }
 
 .plyr--full-ui.plyr--video .plyr__control--overlaid {

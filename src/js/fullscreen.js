@@ -256,7 +256,7 @@ class Fullscreen {
       return;
     }
 
-    // iOS native fullscreen doesn't need the request step
+    // Входим в полноэкранный режим
     if (browser.isIos && this.player.config.fullscreen.iosNative) {
       if (this.player.isVimeo) {
         this.player.embed.requestFullscreen();
@@ -270,12 +270,26 @@ class Fullscreen {
     } else if (!is.empty(this.prefix)) {
       this.target[`${this.prefix}Request${this.property}`]();
     }
+
+    // Поворот экрана после того, как полноэкранный режим активирован
+    document.addEventListener('fullscreenchange', () => {
+      if (this.active && browser.isMobileDevice && window.screen.orientation && window.screen.orientation.lock) {
+        window.screen.orientation.lock('landscape').catch((err) => {
+          this.player.debug.warn('Unable to lock screen orientation:', err);
+        });
+      }
+    });
   };
 
   // Bail from fullscreen
   exit = () => {
     if (!this.enabled) {
       return;
+    }
+
+    // Разблокировка ориентации экрана при выходе из fullscreen
+    if (browser.isMobileDevice && window.screen.orientation && window.screen.orientation.unlock) {
+      window.screen.orientation.unlock();
     }
 
     // iOS native fullscreen

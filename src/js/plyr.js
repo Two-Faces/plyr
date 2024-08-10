@@ -22,6 +22,7 @@ import Storage from './storage';
 import support from './support';
 import ui from './ui';
 import { closest } from './utils/arrays';
+import browser from './utils/browser';
 import { createElement, hasClass, removeElement, replaceElement, toggleClass, wrap } from './utils/elements';
 import { off, on, once, triggerEvent, unbindListeners } from './utils/events';
 import is from './utils/is';
@@ -501,6 +502,7 @@ class Plyr {
       const { duration, currentTime } = this.media;
       let bufferedEnd = 0;
 
+      // eslint-disable-next-line no-plusplus
       for (let i = 0; i < buffered.length; i++) {
         const start = buffered.start(i);
         const end = buffered.end(i);
@@ -545,6 +547,10 @@ class Plyr {
     let volume = value;
     const max = 1;
     const min = 0;
+
+    if (browser.isMobileDevice) {
+      volume = 1;
+    }
 
     if (is.string(volume)) {
       volume = Number(volume);
@@ -611,6 +617,10 @@ class Plyr {
    */
   set muted(mute) {
     let toggle = mute;
+
+    if (browser.isMobileDevice) {
+      toggle = false;
+    }
 
     // Load muted state from storage
     if (!is.boolean(toggle)) {

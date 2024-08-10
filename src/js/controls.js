@@ -240,8 +240,11 @@ const controls = {
         break;
 
       case 'play-large':
+        props.toggle = true;
         attributes.class += ` ${this.config.classNames.control}--overlaid`;
         type = 'play';
+        props.labelPressed = 'pause';
+        props.iconPressed = 'pause';
         props.label = 'play';
         props.icon = 'play';
         break;
@@ -1411,7 +1414,7 @@ const controls = {
       container.appendChild(containerButtons);
 
       // Volume controls
-      if (control === 'mute' || control === 'volume') {
+      if ((control === 'mute' || control === 'volume') && !browser.isMobileDevice) {
         let { volume } = this.elements;
 
         // Create the volume container if needed

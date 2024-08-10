@@ -45,6 +45,7 @@ import toggleClass from './toggle-class';
       controls: [
         'progress',
         'play-large',
+        'pause-large',
         'rewind',
         'play',
         'fast-forward',
