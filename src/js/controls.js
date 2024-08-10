@@ -65,6 +65,8 @@ const controls = {
         settings: getElement.call(this, this.config.selectors.buttons.settings),
         captions: getElement.call(this, this.config.selectors.buttons.captions),
         fullscreen: getElement.call(this, this.config.selectors.buttons.fullscreen),
+        dbClickForward: getElement.call(this, this.config.selectors.buttons.dbClickForward),
+        dbClickRewind: getElement.call(this, this.config.selectors.buttons.dbClickRewind),
       };
 
       // Progress
@@ -637,7 +639,7 @@ const controls = {
         // Check buffer status
         case 'playing':
         case 'progress':
-          setProgress(this.elements.display.buffer, this.buffered * 100);
+          setProgress(this.elements.display.buffer, this.buffered);
 
           break;
 
@@ -1296,6 +1298,7 @@ const controls = {
       setSpeedMenu,
       showMenuPanel,
     } = controls;
+
     this.elements.controls = null;
 
     // Larger overlaid play button
@@ -1303,8 +1306,42 @@ const controls = {
       this.elements.container.appendChild(createButton.call(this, 'play-large'));
     }
 
+    // const buttonDBClickForward = createElement('button', {});
+
+    // this.elements.container.appendChild(
+    //   createButton.call(this, 'db-click-forward', {
+    //     icon: 'fast-forward',
+    //     class: '',
+    //   }),
+    // );
+    //
+    // this.elements.container.appendChild(
+    //   createButton.call(this, 'db-click-rewind', {
+    //     icon: 'rewind',
+    //     class: '',
+    //   }),
+    // );
+
     // Create the container
     const container = createElement('div', getAttributesFromSelector(this.config.selectors.controls.wrapper));
+    const containerButtons = createElement(
+      'div',
+      getAttributesFromSelector(this.config.selectors.controls.containerButtons),
+    );
+
+    const containerButtonsLeft = createElement(
+      'div',
+      getAttributesFromSelector(this.config.selectors.controls.containerButtonsLeft),
+    );
+
+    const containerButtonsRight = createElement(
+      'div',
+      getAttributesFromSelector(this.config.selectors.controls.containerButtonsRight),
+    );
+
+    containerButtons.appendChild(containerButtonsLeft);
+    containerButtons.appendChild(containerButtonsRight);
+
     this.elements.controls = container;
 
     // Default item attributes
@@ -1314,28 +1351,28 @@ const controls = {
     dedupe(is.array(this.config.controls) ? this.config.controls : []).forEach((control) => {
       // Restart button
       if (control === 'restart') {
-        container.appendChild(createButton.call(this, 'restart', defaultAttributes));
+        containerButtonsLeft.appendChild(createButton.call(this, 'restart', defaultAttributes));
       }
 
       // Rewind button
       if (control === 'rewind') {
-        container.appendChild(createButton.call(this, 'rewind', defaultAttributes));
+        containerButtonsLeft.appendChild(createButton.call(this, 'rewind', defaultAttributes));
       }
 
       // Play/Pause button
       if (control === 'play') {
-        container.appendChild(createButton.call(this, 'play', defaultAttributes));
+        containerButtonsLeft.appendChild(createButton.call(this, 'play', defaultAttributes));
       }
 
       // Fast forward button
       if (control === 'fast-forward') {
-        container.appendChild(createButton.call(this, 'fast-forward', defaultAttributes));
+        containerButtonsLeft.appendChild(createButton.call(this, 'fast-forward', defaultAttributes));
       }
 
       // Progress
       if (control === 'progress') {
         const progressContainer = createElement('div', {
-          class: `${defaultAttributes.class} plyr__progress__container`,
+          class: `plyr__progress__container`,
         });
 
         const progress = createElement('div', getAttributesFromSelector(this.config.selectors.progress));
@@ -1371,15 +1408,7 @@ const controls = {
         container.appendChild(progressContainer);
       }
 
-      // Media current time display
-      if (control === 'current-time') {
-        container.appendChild(createTime.call(this, 'currentTime', defaultAttributes));
-      }
-
-      // Media duration display
-      if (control === 'duration') {
-        container.appendChild(createTime.call(this, 'duration', defaultAttributes));
-      }
+      container.appendChild(containerButtons);
 
       // Volume controls
       if (control === 'mute' || control === 'volume') {
@@ -1396,7 +1425,7 @@ const controls = {
 
           this.elements.volume = volume;
 
-          container.appendChild(volume);
+          containerButtonsLeft.appendChild(volume);
         }
 
         // Toggle mute button
@@ -1430,7 +1459,7 @@ const controls = {
 
       // Toggle captions button
       if (control === 'captions') {
-        container.appendChild(createButton.call(this, 'captions', defaultAttributes));
+        containerButtonsRight.appendChild(createButton.call(this, 'captions', defaultAttributes));
       }
 
       // Settings button / menu
@@ -1582,20 +1611,15 @@ const controls = {
 
         popup.appendChild(inner);
         wrapper.appendChild(popup);
-        container.appendChild(wrapper);
+        containerButtonsRight.appendChild(wrapper);
 
         this.elements.settings.popup = popup;
         this.elements.settings.menu = wrapper;
       }
 
-      // Picture in picture button
-      if (control === 'pip' && support.pip) {
-        container.appendChild(createButton.call(this, 'pip', defaultAttributes));
-      }
-
       // Airplay button
       if (control === 'airplay' && support.airplay) {
-        container.appendChild(createButton.call(this, 'airplay', defaultAttributes));
+        containerButtonsRight.appendChild(createButton.call(this, 'airplay', defaultAttributes));
       }
 
       // Download button
@@ -1620,12 +1644,27 @@ const controls = {
           });
         }
 
-        container.appendChild(createButton.call(this, 'download', attributes));
+        containerButtonsRight.appendChild(createButton.call(this, 'download', attributes));
       }
 
       // Toggle fullscreen button
       if (control === 'fullscreen') {
-        container.appendChild(createButton.call(this, 'fullscreen', defaultAttributes));
+        containerButtonsRight.appendChild(createButton.call(this, 'fullscreen', defaultAttributes));
+      }
+
+      // Picture in picture button
+      if (control === 'pip' && support.pip) {
+        containerButtonsRight.appendChild(createButton.call(this, 'pip', defaultAttributes));
+      }
+
+      // Media current time display
+      if (control === 'current-time') {
+        containerButtonsLeft.appendChild(createTime.call(this, 'currentTime', defaultAttributes));
+      }
+
+      // Media duration display
+      if (control === 'duration') {
+        containerButtonsLeft.appendChild(createTime.call(this, 'duration', defaultAttributes));
       }
     });
 

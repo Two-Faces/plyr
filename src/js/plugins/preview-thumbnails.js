@@ -658,9 +658,6 @@ class PreviewThumbnails {
 
     // Move the popover position
     container.style.left = `${clamped}px`;
-
-    // The arrow can follow the cursor
-    container.style.setProperty('--preview-arrow-offset', `${position - clamped}px`);
   };
 
   // Can't use 100% width, in case the video is a different aspect ratio to the video container

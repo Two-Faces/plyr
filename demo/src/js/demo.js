@@ -42,7 +42,22 @@ import toggleClass from './toggle-class';
 
     // Setup the player
     const player = new Plyr(selector, {
-      debug: true,
+      controls: [
+        'progress',
+        'play-large',
+        'rewind',
+        'play',
+        'fast-forward',
+        'mute',
+        'volume',
+        'current-time',
+        'duration',
+        'settings',
+        'fullscreen',
+        'pip',
+      ],
+      seekTime: 5,
+      debug: false,
       title: 'View From A Blue Moon',
       iconUrl: 'dist/demo.svg',
       keyboard: {

@@ -24,21 +24,6 @@
     transform: translate(0, 0) scale(1);
   }
 
-  // The background triangle
-  &::before {
-    border-left: $plyr-preview-arrow-size solid transparent;
-    border-right: $plyr-preview-arrow-size solid transparent;
-    border-top: $plyr-preview-arrow-size solid $plyr-preview-background;
-    bottom: calc(#{$plyr-preview-arrow-size} * -1);
-    content: '';
-    height: 0;
-    left: calc(50% + var(--preview-arrow-offset));
-    position: absolute;
-    transform: translateX(-50%);
-    width: 0;
-    z-index: 2;
-  }
-
   &__marker-container {
     font-size: 10px;
     left: 0;

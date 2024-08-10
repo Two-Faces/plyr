@@ -294,6 +294,9 @@ const defaults = {
     controls: {
       container: null,
       wrapper: '.plyr__controls',
+      containerButtons: '.plyr__controls__buttons',
+      containerButtonsLeft: '.plyr__controls__left',
+      containerButtonsRight: '.plyr__controls__right',
     },
     labels: '[data-plyr]',
     buttons: {
@@ -310,6 +313,8 @@ const defaults = {
       airplay: '[data-plyr="airplay"]',
       settings: '[data-plyr="settings"]',
       loop: '[data-plyr="loop"]',
+      dbClickForward: '[data-plyr="db-click-forward"]',
+      dbClickRewind: '[data-plyr="db-click-rewind"]',
     },
     inputs: {
       seek: '[data-plyr="seek"]',

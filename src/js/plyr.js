@@ -497,12 +497,22 @@ class Plyr {
     }
 
     // HTML5
-    // TODO: Handle buffered chunks of the media
-    // (i.e. seek to another section buffers only that section)
     if (buffered && buffered.length && this.duration > 0) {
-      return buffered.end(0) / this.duration;
-    }
+      const { duration, currentTime } = this.media;
+      let bufferedEnd = 0;
 
+      for (let i = 0; i < buffered.length; i++) {
+        const start = buffered.start(i);
+        const end = buffered.end(i);
+
+        if (currentTime >= start && currentTime <= end) {
+          bufferedEnd = end;
+          break;
+        }
+      }
+
+      return (bufferedEnd / duration) * 100;
+    }
     return 0;
   }
 

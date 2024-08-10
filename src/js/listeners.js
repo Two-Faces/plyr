@@ -29,9 +29,9 @@ class Listeners {
   handleKey(event) {
     const { player } = this;
     const { elements } = player;
-    const { key, type, altKey, ctrlKey, metaKey, shiftKey } = event;
+    const { code, key, type, altKey, ctrlKey, metaKey, shiftKey } = event;
     const pressed = type === 'keydown';
-    const repeat = pressed && key === this.lastKey;
+    const repeat = pressed && code === this.lastKey;
 
     // Bail if a modifier key is set
     if (altKey || ctrlKey || metaKey || shiftKey) {
@@ -40,7 +40,7 @@ class Listeners {
 
     // If the event is bubbled from the media element
     // Firefox doesn't get the key for whatever reason
-    if (!key) {
+    if (!code) {
       return;
     }
 
@@ -65,7 +65,7 @@ class Listeners {
           return;
         }
 
-        if (event.key === 'Space' && matches(focused, 'button, [role^="menuitem"]')) {
+        if (code === 'Space' && matches(focused, 'button, [role^="menuitem"]')) {
           return;
         }
       }
@@ -78,48 +78,69 @@ class Listeners {
         'ArrowRight',
         'ArrowDown',
 
-        '0',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
+        'Digit0',
+        'Digit1',
+        'Digit2',
+        'Digit3',
+        'Digit4',
+        'Digit5',
+        'Digit6',
+        'Digit7',
+        'Digit8',
+        'Digit9',
 
-        'c',
-        'f',
-        'k',
-        'l',
-        'm',
+        'Numpad0',
+        'Numpad1',
+        'Numpad2',
+        'Numpad3',
+        'Numpad4',
+        'Numpad5',
+        'Numpad6',
+        'Numpad7',
+        'Numpad8',
+        'Numpad9',
+
+        'KeyC',
+        'KeyF',
+        'KeyK',
+        'KeyL',
+        'KeyM',
       ];
 
       // If the key is found prevent default (e.g. prevent scrolling for arrows)
-      if (preventDefault.includes(key)) {
+      if (preventDefault.includes(code)) {
         event.preventDefault();
         event.stopPropagation();
       }
 
-      switch (key) {
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+      switch (code) {
+        case 'Digit0':
+        case 'Digit1':
+        case 'Digit2':
+        case 'Digit3':
+        case 'Digit4':
+        case 'Digit5':
+        case 'Digit6':
+        case 'Digit7':
+        case 'Digit8':
+        case 'Digit9':
+        case 'Numpad0':
+        case 'Numpad1':
+        case 'Numpad2':
+        case 'Numpad3':
+        case 'Numpad4':
+        case 'Numpad5':
+        case 'Numpad6':
+        case 'Numpad7':
+        case 'Numpad8':
+        case 'Numpad9':
           if (!repeat) {
             seekByIncrement(parseInt(key, 10));
           }
           break;
 
         case 'Space':
-        case 'k':
+        case 'KeyK':
           if (!repeat) {
             silencePromise(player.togglePlay());
           }
@@ -133,7 +154,7 @@ class Listeners {
           player.decreaseVolume(0.1);
           break;
 
-        case 'm':
+        case 'KeyM':
           if (!repeat) {
             player.muted = !player.muted;
           }
@@ -147,17 +168,17 @@ class Listeners {
           player.rewind();
           break;
 
-        case 'f':
+        case 'KeyF':
           player.fullscreen.toggle();
           break;
 
-        case 'c':
+        case 'KeyC':
           if (!repeat) {
             player.toggleCaptions();
           }
           break;
 
-        case 'l':
+        case 'KeyL':
           player.loop = !player.loop;
           break;
 
@@ -167,12 +188,12 @@ class Listeners {
 
       // Escape is handle natively when in full screen
       // So we only need to worry about non native
-      if (key === 'Escape' && !player.fullscreen.usingNative && player.fullscreen.active) {
+      if (code === 'Escape' && !player.fullscreen.usingNative && player.fullscreen.active) {
         player.fullscreen.toggle();
       }
 
       // Store last key for next cycle
-      this.lastKey = key;
+      this.lastKey = code;
     } else {
       this.lastKey = null;
     }
@@ -570,6 +591,26 @@ class Listeners {
 
     // Pause
     this.bind(elements.buttons.restart, 'click', player.restart, 'restart');
+
+    this.bind(
+      elements.buttons.dbClickForward,
+      'dblclick',
+      () => {
+        player.lastSeekTime = Date.now();
+        player.forward();
+      },
+      'dbClickForward',
+    );
+
+    this.bind(
+      elements.buttons.dbClickRewind,
+      'dblclick',
+      () => {
+        player.lastSeekTime = Date.now();
+        player.rewind();
+      },
+      'dbClickForward',
+    );
 
     // Rewind
     this.bind(
