@@ -12,6 +12,26 @@
   &.plyr--menu-open {
     overflow: visible;
   }
+
+  .plyr__controls__buttons {
+    height: 48px;
+  }
+
+  // Progress
+  .plyr__progress {
+    &__buffer {
+      color: $plyr-video-progress-buffered-background;
+    }
+
+    input[type="range"],
+    &__buffer {
+      margin-bottom: -24px;
+    }
+
+    input[type='range'] {
+      height: calc((#{$plyr-range-thumb-active-shadow-width} * 16) + #{$plyr-range-thumb-height});
+    }
+  }
 }
 
 .plyr__video-wrapper {
@@ -84,8 +104,6 @@ $embed-padding: (math.div(100, 16) * 9);
   &.plyr__tab-focus,
   &:hover,
   &[aria-expanded='true'] {
-    color: $plyr-video-control-background-hover;
-
     svg {
       fill: $plyr-video-control-color-hover;
     }
@@ -181,9 +199,4 @@ $embed-padding: (math.div(100, 16) * 9);
       @include plyr-range-thumb-active($plyr-video-range-thumb-active-shadow-color);
     }
   }
-}
-
-// Progress
-.plyr--video .plyr__progress__buffer {
-  color: $plyr-video-progress-buffered-background;
 }

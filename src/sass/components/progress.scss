@@ -15,7 +15,6 @@ $plyr-progress-offset: $plyr-range-thumb-height;
     margin-left: calc(#{$plyr-progress-offset} * -0.5);
     margin-right: calc(#{$plyr-progress-offset} * -0.5);
     width: calc(100% + #{$plyr-progress-offset});
-    margin-bottom: -24px;
   }
 
   input[type='range'] {

@@ -25,7 +25,7 @@ $plyr-video-control-background-hover: var(
 ) !default;
 $plyr-audio-controls-background: var(--plyr-audio-controls-background, #fff) !default;
 $plyr-audio-control-color: var(--plyr-audio-control-color, $plyr-color-gray-700) !default;
-$plyr-audio-control-color-hover: var(--plyr-audio-control-color-hover, #fff) !default;
+$plyr-audio-control-color-hover: var(--plyr-audio-control-color-hover, #212121) !default;
 $plyr-audio-control-background-hover: var(
   --plyr-audio-control-background-hover,
   var(--plyr-color-main, $plyr-color-main)

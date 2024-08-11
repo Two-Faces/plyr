@@ -4,6 +4,7 @@
 
 .plyr__time {
   font-size: $plyr-font-size-time;
+  pointer-events: none;
 }
 
 // Media duration hidden on small screens

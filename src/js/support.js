@@ -58,9 +58,9 @@ const support = {
   // Picture-in-picture support
   // Safari & Chrome only currently
   pip: (() => {
-    if (browser.isIPhone) {
-      return false;
-    }
+    // if (browser.isIPhone) {
+    //   return false;
+    // }
 
     // Safari
     // https://developer.apple.com/documentation/webkitjs/adding_picture_in_picture_to_your_safari_media_controls

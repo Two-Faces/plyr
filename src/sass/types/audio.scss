@@ -21,11 +21,15 @@
 
 // Control elements
 .plyr--audio:not(.plyr--is-touch) .plyr__control {
+  svg {
+    transition: 0.2s;
+  }
+
   &.plyr__tab-focus,
   &:hover,
   &[aria-expanded='true'] {
     svg {
-      fill: $plyr-video-control-color-hover;
+      fill: $plyr-audio-control-color-hover;
     }
   }
 }

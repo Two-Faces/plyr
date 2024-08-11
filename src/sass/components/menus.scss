@@ -84,6 +84,10 @@
         width: 100%;
       }
 
+      &:hover {
+        color: $plyr-video-control-background-hover;
+      }
+
       &::after {
         border: $plyr-menu-item-arrow-size solid transparent;
         content: '';
@@ -181,8 +185,8 @@
         }
       }
 
-      &.plyr__tab-focus::before,
-      &:hover::before {
+      &:not([aria-checked="true"]).plyr__tab-focus::before,
+      &:not([aria-checked="true"]):hover::before {
         background: rgba($plyr-color-gray-900, 0.1);
       }
     }
