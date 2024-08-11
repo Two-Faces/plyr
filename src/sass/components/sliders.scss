@@ -11,7 +11,7 @@
   // `color` property is used in JS to populate lower fill for WebKit
   color: $plyr-range-fill-background;
   display: block;
-  height: calc((#{$plyr-range-thumb-active-shadow-width} * 2) + #{$plyr-range-thumb-height});
+  height: calc((#{$plyr-range-thumb-active-shadow-width} * 16) + #{$plyr-range-thumb-height});
   margin: 0;
   min-width: 0;
   padding: 0;

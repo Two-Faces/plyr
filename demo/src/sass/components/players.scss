@@ -9,6 +9,10 @@
   border-radius: $border-radius-large;
   box-shadow: 0 2px 15px rgba(#000, 0.1);
   margin: $spacing-base auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
   &.plyr--audio {
     max-width: 480px;
