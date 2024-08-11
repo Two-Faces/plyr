@@ -20,7 +20,7 @@
 }
 
 // Control elements
-.plyr--audio .plyr__control {
+.plyr--audio:not(.plyr--is-touch) .plyr__control {
   &.plyr__tab-focus,
   &:hover,
   &[aria-expanded='true'] {

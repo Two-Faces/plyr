@@ -61,9 +61,6 @@ import toggleClass from './toggle-class';
       keyboard: {
         global: true,
       },
-      tooltips: {
-        controls: true,
-      },
       captions: {
         active: true,
       },

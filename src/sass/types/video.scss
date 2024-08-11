@@ -79,7 +79,7 @@ $embed-padding: (math.div(100, 16) * 9);
 }
 
 // Control elements
-.plyr--video .plyr__control {
+.plyr--video:not(.plyr--is-touch) .plyr__control {
   // Hover and tab focus
   &.plyr__tab-focus,
   &:hover,
@@ -91,29 +91,39 @@ $embed-padding: (math.div(100, 16) * 9);
 
 // Large play button (video only)
 .plyr__control--overlaid {
-  background: $plyr-video-control-background-hover;
+  background: $plyr-video-control-play-color;
   border: 0;
   border-radius: 100%;
   color: $plyr-video-control-color;
   display: none;
-  left: 50%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  margin: auto;
   opacity: 0.9;
   padding: calc(#{$plyr-control-spacing} * 1.5);
   position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
   transition: 0.3s;
   z-index: 2;
+  width: 80px !important;
+  height: 80px;
 
   // Offset icon to make the play button look right
   svg {
-    left: 2px;
-    position: relative;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 24px;
+    height: 24px;
   }
 
-  &:hover,
-  &:focus {
-    opacity: 1;
+  &:hover {
+    background: $plyr-video-control-play-color-hover !important;
+    transform: scale(1.06);
   }
 }
 
