@@ -792,7 +792,6 @@ const controls = {
 
           // We check if the point is found and it does not coincide with the last vibration
           if (this.lastVibratedPoint !== point.time && event.type === 'touchmove') {
-            console.log('vibrate');
             // Call vibration
             if (navigator.vibrate) {
               navigator.vibrate([30]);
