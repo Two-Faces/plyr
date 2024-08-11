@@ -3,7 +3,7 @@
 // ==========================================================================
 
 import controls from './controls';
-import support, { getPositionClickOfContainer } from './support';
+import support from './support';
 import ui from './ui';
 import { repaint } from './utils/animation';
 import browser from './utils/browser';
@@ -30,16 +30,11 @@ class Listeners {
     this.firstTouch = this.firstTouch.bind(this);
   }
 
-  contextMenu(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  resizeHandler() {
+  resizeHandler = () => {
     const { player } = this;
 
     player.previewThumbnails.fixPreviewSize();
-  }
+  };
 
   // Handle key presses
   handleKey(event) {
@@ -130,7 +125,7 @@ class Listeners {
       }
 
       // Increasing the click counter
-      this.clickCount++;
+      this.clickCount += 1;
 
       if (player.playing) {
         elements.controls.hover = true;
@@ -231,6 +226,11 @@ class Listeners {
     }
   }
 
+  handleContextMenu = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   // Toggle menu
   toggleMenu(event) {
     controls.toggleMenu.call(this.player, event);
@@ -311,7 +311,7 @@ class Listeners {
       toggleListener.call(player, window, 'resize', this.resizeHandler, toggle, false);
     }
 
-    toggleListener.call(player, player.elements.container, 'contextmenu', this.contextMenu, toggle, false);
+    toggleListener.call(player, player.elements.container, 'contextmenu', this.handleContextMenu, toggle, false);
 
     // Click anywhere closes menu
     toggleListener.call(player, document.body, 'click', this.toggleMenu, toggle);
@@ -490,7 +490,7 @@ class Listeners {
         }
 
         // Increasing the click counter
-        this.clickCount++;
+        this.clickCount += 1;
 
         if (player.playing) {
           elements.controls.hover = true;
@@ -509,6 +509,8 @@ class Listeners {
             case 'right':
               player.lastSeekTime = Date.now();
               player.forward(null, totalTime);
+              break;
+            default:
               break;
           }
         }

@@ -277,7 +277,7 @@ class Fullscreen {
     }
 
     // Поворот экрана после того, как полноэкранный режим активирован
-    document.addEventListener('fullscreenchange', (event) => {
+    document.addEventListener('fullscreenchange', () => {
       if (this.active && browser.isMobileDevice && window.screen.orientation && window.screen.orientation.lock) {
         window.screen.orientation.lock('landscape').catch((err) => {
           this.player.debug.warn('Unable to lock screen orientation:', err);

@@ -184,12 +184,12 @@ declare class Plyr {
   /**
    * Rewind playback by the specified seek time. If no parameter is passed, the default seek time will be used.
    */
-  rewind(seekTime?: number): void;
+  rewind(seekTime?: number, total?: number): void;
 
   /**
    * Fast forward by the specified seek time. If no parameter is passed, the default seek time will be used.
    */
-  forward(seekTime?: number): void;
+  forward(seekTime?: number, total?: number): void;
 
   /**
    * Increase volume by the specified step. If no parameter is passed, the default step will be used.

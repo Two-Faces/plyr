@@ -1948,8 +1948,6 @@ const controls = {
     const containerFragment = document.createDocumentFragment();
     const pointsFragment = document.createDocumentFragment();
     let tipElement = null;
-    const tipVisible = `${this.config.classNames.tooltip}--visible`;
-    const toggleTip = (show) => toggleClass(tipElement, tipVisible, show);
 
     // Inject markers to progress container
     points.forEach((point) => {
