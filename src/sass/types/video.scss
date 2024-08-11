@@ -17,6 +17,10 @@
     height: 48px;
   }
 
+  &.plyr--is-touch .plyr__progress__container {
+    padding: 0 10px;
+  }
+
   // Progress
   .plyr__progress {
     &__buffer {
