@@ -24,8 +24,9 @@
   &.plyr__tab-focus,
   &:hover,
   &[aria-expanded='true'] {
-    background: $plyr-audio-control-background-hover;
-    color: $plyr-audio-control-color-hover;
+    svg {
+      fill: $plyr-video-control-color-hover;
+    }
   }
 }
 

@@ -84,8 +84,11 @@ $embed-padding: (math.div(100, 16) * 9);
   &.plyr__tab-focus,
   &:hover,
   &[aria-expanded='true'] {
-    background: $plyr-video-control-background-hover;
     color: $plyr-video-control-color-hover;
+
+    svg {
+      fill: $plyr-video-control-color-hover;
+    }
   }
 }
 

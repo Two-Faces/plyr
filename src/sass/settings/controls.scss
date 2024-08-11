@@ -18,7 +18,7 @@ $plyr-video-controls-background: var(
 $plyr-video-control-color: var(--plyr-video-control-color, #fff) !default;
 $plyr-video-control-play-color: var(--plyr-video-control-play-color, rgba(33, 33, 33, .4)) !default;
 $plyr-video-control-play-color-hover: var(--plyr-video-control-play-color-hover, rgba(33, 33, 33, .6)) !default;
-$plyr-video-control-color-hover: var(--plyr-video-control-color-hover, #fff) !default;
+$plyr-video-control-color-hover: var(--plyr-video-control-color-hover, rgba(255,255,255, 0.8)) !default;
 $plyr-video-control-background-hover: var(
   --plyr-video-control-background-hover,
   var(--plyr-color-main, $plyr-color-main)
