@@ -5,6 +5,16 @@
 // Container
 .plyr--audio {
   display: block;
+
+  &.plyr--is-touch {
+    .plyr__progress__container {
+      padding: 0 16px;
+    }
+
+    .plyr__controls__buttons {
+      padding: 0 8px 6px;
+    }
+  }
 }
 
 // Controls container
