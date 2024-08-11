@@ -2,40 +2,40 @@
 // Controls
 // --------------------------------------------------------------
 
+.plyr__info__timecode {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 70px;
+  margin: auto;
+  height: 42px;
+  max-width: 300px;
+  width: max-content;
+  padding: 10px 12px;
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(0,0,0,.8);
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.1s;
+
+  &--visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
 .plyr--video .plyr__info {
   position: absolute;
   top: 0;
   z-index: 2;
   height: 100%;
   width: var(--width-info);
-
-  &__timecode {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 70px;
-    margin: auto;
-    height: 42px;
-    max-width: 300px;
-    width: max-content;
-    padding: 10px 12px;
-    border-radius: 16px;
-    color: #fff;
-    background: rgba(0,0,0,.8);
-    font-size: 14px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    z-index: 1;
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.1s;
-
-    &--visible {
-      opacity: 1;
-      visibility: visible;
-    }
-  }
 
   &--visible.plyr__info--rewind,
   &--visible.plyr__info--forward {

@@ -179,47 +179,49 @@ const controls = {
       class: info.timecode,
     });
 
-    const infoBlockForward = createElement('div', {
-      style: `--width-info: ${this.config.percentageRewindPlacement}%`,
-      class: `${info.block} ${info.forwardSeconds}`,
-    });
+    if (this.isVideo) {
+      const infoBlockForward = createElement('div', {
+        style: `--width-info: ${this.config.percentageRewindPlacement}%`,
+        class: `${info.block} ${info.forwardSeconds}`,
+      });
 
-    const infoBlockRewind = createElement('div', {
-      style: `--width-info: ${this.config.percentageRewindPlacement}%`,
-      class: `${info.block} ${info.rewindSeconds}`,
-    });
+      const infoBlockRewind = createElement('div', {
+        style: `--width-info: ${this.config.percentageRewindPlacement}%`,
+        class: `${info.block} ${info.rewindSeconds}`,
+      });
 
-    infoBlockForward.appendChild(
-      controls.createIcon.call(this, 'fast-forward', {
-        class: info.icon,
-      }),
-    );
+      infoBlockForward.appendChild(
+        controls.createIcon.call(this, 'fast-forward', {
+          class: info.icon,
+        }),
+      );
 
-    infoBlockRewind.appendChild(
-      controls.createIcon.call(this, 'rewind', {
-        class: info.icon,
-      }),
-    );
+      infoBlockRewind.appendChild(
+        controls.createIcon.call(this, 'rewind', {
+          class: info.icon,
+        }),
+      );
 
-    const infoTextForward = createElement('span', {
-      class: info.textSeconds,
-    });
+      const infoTextForward = createElement('span', {
+        class: info.textSeconds,
+      });
 
-    const infoTextRewind = createElement('span', {
-      class: info.textSeconds,
-    });
+      const infoTextRewind = createElement('span', {
+        class: info.textSeconds,
+      });
 
-    infoBlockRewind.appendChild(infoTextRewind);
-    infoBlockForward.appendChild(infoTextForward);
+      infoBlockRewind.appendChild(infoTextRewind);
+      infoBlockForward.appendChild(infoTextForward);
 
-    this.elements.info.rewindBlock = infoBlockRewind;
-    this.elements.info.rewindText = infoTextRewind;
-    this.elements.info.forwardText = infoTextForward;
-    this.elements.info.forwardBlock = infoBlockForward;
+      this.elements.info.rewindBlock = infoBlockRewind;
+      this.elements.info.rewindText = infoTextRewind;
+      this.elements.info.forwardText = infoTextForward;
+      this.elements.info.forwardBlock = infoBlockForward;
+      this.elements.container.appendChild(infoBlockRewind);
+      this.elements.container.appendChild(infoBlockForward);
+    }
+
     this.elements.info.timecode = infoTimecode;
-
-    this.elements.container.appendChild(infoBlockRewind);
-    this.elements.container.appendChild(infoBlockForward);
     this.elements.container.appendChild(infoTimecode);
   },
 
@@ -1421,9 +1423,7 @@ const controls = {
       this.elements.container.appendChild(createButton.call(this, 'play-large'));
     }
 
-    if (this.isVideo) {
-      createInfo.call(this);
-    }
+    createInfo.call(this);
 
     // Create the container
     const container = createElement('div', getAttributesFromSelector(this.config.selectors.controls.wrapper));

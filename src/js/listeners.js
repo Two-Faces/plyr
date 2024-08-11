@@ -623,6 +623,18 @@ class Listeners {
     }
   };
 
+  preventDefaultScroll = (event) => {
+    event.preventDefault();
+  };
+
+  handleTouchStart = () => {
+    document.addEventListener('touchmove', this.preventDefaultScroll, { passive: false });
+  };
+
+  handleTouchEnd = () => {
+    document.removeEventListener('touchmove', this.preventDefaultScroll);
+  };
+
   // Trigger custom and default handlers
   bind = (element, type, defaultHandler, customHandlerKey, passive = true) => {
     const { player } = this;
@@ -847,9 +859,18 @@ class Listeners {
     );
 
     // Seek tooltip
-    this.bind(elements.progress, 'mouseenter mouseleave mousemove touchmove touchstart touchend', (event) =>
-      controls.updateSeekTooltip.call(player, event),
-    );
+    this.bind(elements.progress, 'mouseenter mouseleave mousemove touchmove touchstart touchend', (event) => {
+      // Fixed scroll on touch devices, where the controls won't be hidden after a timeout
+      if (event.type === 'touchstart') {
+        this.handleTouchStart();
+      }
+
+      if (event.type === 'touchend') {
+        this.handleTouchEnd();
+      }
+
+      controls.updateSeekTooltip.call(player, event);
+    });
 
     // Preview thumbnails plugin
     // TODO: Really need to work on some sort of plug-in wide event bus or pub-sub for this
