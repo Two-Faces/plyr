@@ -28,6 +28,10 @@ $plyr-progress-offset: $plyr-range-thumb-height;
     max-width: 120px;
     overflow-wrap: break-word;
     white-space: normal;
+
+    &--seek {
+      width: max-content;
+    }
   }
 }
 
@@ -98,11 +102,11 @@ $plyr-progress-offset: $plyr-range-thumb-height;
 // Markers
 .plyr__progress__marker {
   background-color: $plyr-progress-marker-background;
-  border-radius: 1px;
   height: $plyr-range-track-height;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
   width: $plyr-progress-marker-width;
   z-index: 3;
+  pointer-events: none;
 }

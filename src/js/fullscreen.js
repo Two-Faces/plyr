@@ -4,6 +4,7 @@
 // https://webkit.org/blog/7929/designing-websites-for-iphone-x/
 // ==========================================================================
 
+import support from './support';
 import browser from './utils/browser';
 import { closest, getElements, hasClass, toggleClass } from './utils/elements';
 import { on, triggerEvent } from './utils/events';
@@ -49,7 +50,11 @@ class Fullscreen {
         return;
       }
 
-      this.player.listeners.proxy(event, this.toggle, 'fullscreen');
+      const position = support.getPositionClickOfContainer(event, this.player);
+
+      if (position === 'center') {
+        this.player.listeners.proxy(event, this.toggle, 'fullscreen');
+      }
     });
 
     // Tap focus when in fullscreen
@@ -272,7 +277,7 @@ class Fullscreen {
     }
 
     // Поворот экрана после того, как полноэкранный режим активирован
-    document.addEventListener('fullscreenchange', () => {
+    document.addEventListener('fullscreenchange', (event) => {
       if (this.active && browser.isMobileDevice && window.screen.orientation && window.screen.orientation.lock) {
         window.screen.orientation.lock('landscape').catch((err) => {
           this.player.debug.warn('Unable to lock screen orientation:', err);

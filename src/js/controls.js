@@ -25,7 +25,7 @@ import {
   toggleClass,
   toggleHidden,
 } from './utils/elements';
-import { off, on } from './utils/events';
+import { off, on, toggleListener } from './utils/events';
 import i18n from './utils/i18n';
 import is from './utils/is';
 import loadSprite from './utils/load-sprite';
@@ -166,6 +166,61 @@ const controls = {
     );
 
     return badge;
+  },
+
+  createInfo() {
+    const { info } = this.config.classNames;
+
+    if (this.elements.info.rewindBlock || this.elements.info.forwardBlock) {
+      return;
+    }
+
+    const infoTimecode = createElement('div', {
+      class: info.timecode,
+    });
+
+    const infoBlockForward = createElement('div', {
+      style: `--width-info: ${this.config.percentageRewindPlacement}%`,
+      class: `${info.block} ${info.forwardSeconds}`,
+    });
+
+    const infoBlockRewind = createElement('div', {
+      style: `--width-info: ${this.config.percentageRewindPlacement}%`,
+      class: `${info.block} ${info.rewindSeconds}`,
+    });
+
+    infoBlockForward.appendChild(
+      controls.createIcon.call(this, 'fast-forward', {
+        class: info.icon,
+      }),
+    );
+
+    infoBlockRewind.appendChild(
+      controls.createIcon.call(this, 'rewind', {
+        class: info.icon,
+      }),
+    );
+
+    const infoTextForward = createElement('span', {
+      class: info.textSeconds,
+    });
+
+    const infoTextRewind = createElement('span', {
+      class: info.textSeconds,
+    });
+
+    infoBlockRewind.appendChild(infoTextRewind);
+    infoBlockForward.appendChild(infoTextForward);
+
+    this.elements.info.rewindBlock = infoBlockRewind;
+    this.elements.info.rewindText = infoTextRewind;
+    this.elements.info.forwardText = infoTextForward;
+    this.elements.info.forwardBlock = infoBlockForward;
+    this.elements.info.timecode = infoTimecode;
+
+    this.elements.container.appendChild(infoBlockRewind);
+    this.elements.container.appendChild(infoBlockForward);
+    this.elements.container.appendChild(infoTimecode);
   },
 
   // Create a <button>
@@ -702,47 +757,96 @@ const controls = {
     }
 
     const tipElement = this.elements.display.seekTooltip;
-    const visible = `${this.config.classNames.tooltip}--visible`;
-    const toggle = (show) => toggleClass(tipElement, visible, show);
+    const timecodeElement = this.elements.info.timecode;
+    const timecodeVisibleClass = this.config.classNames.info.timecodeVisible;
+    const tipVisibleClass = `${this.config.classNames.tooltip}--visible`;
+    const toggleTip = (show) => toggleClass(tipElement, tipVisibleClass, show);
+    const toggleTimecode = (show) => toggleClass(timecodeElement, timecodeVisibleClass, show);
+    let percent = 0;
+    const clientRect = this.elements.progress.getBoundingClientRect();
 
-    // Hide on touch
+    // Replace tooltip of touch
     if (this.touch) {
-      toggle(false);
+      toggleTip(false);
+
+      if (is.event(event)) {
+        const touch = event.changedTouches?.length ? event.changedTouches : event.touches;
+
+        if (!touch) {
+          return;
+        }
+
+        percent = (100 / clientRect.width) * (touch[0].pageX - clientRect.left);
+
+        // Set bounds
+        percent = Math.max(0, Math.min(100, percent));
+
+        const time = (this.duration / 100) * percent;
+        let text = controls.formatTime(time);
+        const point = controls.getPointFromTime.call(this, time);
+
+        if (point) {
+          if (event.type === 'touchstart') {
+            this.lastVibratedPoint = point.time;
+          }
+
+          // We check if the point is found and it does not coincide with the last vibration
+          if (this.lastVibratedPoint !== point.time && event.type === 'touchmove') {
+            console.log('vibrate');
+            // Call vibration
+            if (navigator.vibrate) {
+              navigator.vibrate([30]);
+            }
+
+            // Update the last vibrated marker
+            this.lastVibratedPoint = point.time;
+          }
+
+          const { label } = point;
+
+          text = `${text} - ${label}`;
+        }
+
+        timecodeElement.innerText = text;
+
+        // Show/hide the timecode
+        // If the event is a moues in/out and percentage is inside bounds
+        if (['touchmove', 'touchstart', 'touchend'].includes(event.type)) {
+          toggleTimecode(event.type !== 'touchend');
+
+          if (event.type === 'touchend') {
+            this.lastVibratedPoint = null;
+          }
+        }
+      }
+
       return;
     }
 
     // Determine percentage, if already visible
-    let percent = 0;
-    const clientRect = this.elements.progress.getBoundingClientRect();
-
     if (is.event(event)) {
       percent = (100 / clientRect.width) * (event.pageX - clientRect.left);
-    } else if (hasClass(tipElement, visible)) {
+    } else if (hasClass(tipElement, tipVisibleClass)) {
       percent = parseFloat(tipElement.style.left, 10);
     } else {
       return;
     }
 
     // Set bounds
-    if (percent < 0) {
-      percent = 0;
-    } else if (percent > 100) {
-      percent = 100;
-    }
+    percent = Math.max(0, Math.min(100, percent));
 
     const time = (this.duration / 100) * percent;
 
     // Display the time a click would seek to
     tipElement.innerText = controls.formatTime(time);
 
-    // Get marker point for time
-    const point = this.config.markers?.points?.filter(({ time: t }) => t <= Math.round(time)).at(-1);
+    const point = controls.getPointFromTime.call(this, time);
 
     // Append the point label to the tooltip
     if (point) {
       const { label } = point;
 
-      if (this.config.previewThumbnails.enabled) {
+      if (this.config.previewThumbnails.enabled && this.isVideo) {
         if (!this.elements.display.markerContainer) {
           const container = this.elements.progress.querySelector(
             `.${this.config.classNames.previewThumbnails.thumbContainer}`,
@@ -757,11 +861,11 @@ const controls = {
           container.prepend(element);
         }
 
-        if (this.elements.display.markerContainer.innerHTML !== label) {
-          this.elements.display.markerContainer.innerHTML = label;
+        if (this.elements.display.markerContainer.innerText !== label) {
+          this.elements.display.markerContainer.innerText = label;
         }
-      } else {
-        tipElement.insertAdjacentHTML('afterbegin', `${label}<br>`);
+      } else if (!tipElement.innerText.includes(label)) {
+        tipElement.insertAdjacentHTML('afterbegin', `<span>${label}</span><br>`);
       }
     }
 
@@ -771,8 +875,16 @@ const controls = {
     // Show/hide the tooltip
     // If the event is a moues in/out and percentage is inside bounds
     if (is.event(event) && ['mouseenter', 'mouseleave'].includes(event.type)) {
-      toggle(event.type === 'mouseenter');
+      toggleTip(event.type === 'mouseenter');
     }
+  },
+
+  /**
+   * Get marker point for time
+   * @param time
+   */
+  getPointFromTime(time) {
+    return this.config.markers?.points?.filter(({ time: t }) => t <= Math.round(time)).at(-1);
   },
 
   // Handle time change event
@@ -1294,6 +1406,7 @@ const controls = {
     const {
       bindMenuItemShortcuts,
       createButton,
+      createInfo,
       createProgress,
       createRange,
       createTime,
@@ -1309,21 +1422,9 @@ const controls = {
       this.elements.container.appendChild(createButton.call(this, 'play-large'));
     }
 
-    // const buttonDBClickForward = createElement('button', {});
-
-    // this.elements.container.appendChild(
-    //   createButton.call(this, 'db-click-forward', {
-    //     icon: 'fast-forward',
-    //     class: '',
-    //   }),
-    // );
-    //
-    // this.elements.container.appendChild(
-    //   createButton.call(this, 'db-click-rewind', {
-    //     icon: 'rewind',
-    //     class: '',
-    //   }),
-    // );
+    if (this.isVideo) {
+      createInfo.call(this);
+    }
 
     // Create the container
     const container = createElement('div', getAttributesFromSelector(this.config.selectors.controls.wrapper));
@@ -1397,7 +1498,7 @@ const controls = {
           const tooltip = createElement(
             'span',
             {
-              class: this.config.classNames.tooltip,
+              class: `${this.config.classNames.tooltip} ${this.config.classNames.tooltipSeek}`,
             },
             '00:00',
           );
@@ -1862,24 +1963,16 @@ const controls = {
 
       const left = `${(point.time / this.duration) * 100}%`;
 
-      if (tipElement) {
-        // Show on hover
-        markerElement.addEventListener('mouseenter', () => {
-          if (point.label) return;
-          tipElement.style.left = left;
-          tipElement.innerHTML = point.label;
-          toggleTip(true);
-        });
-
-        // Hide on leave
-        markerElement.addEventListener('mouseleave', () => {
-          toggleTip(false);
-        });
-      }
-
-      markerElement.addEventListener('click', () => {
-        this.currentTime = point.time;
-      });
+      toggleListener.call(
+        this,
+        markerElement,
+        'click',
+        () => {
+          this.currentTime = Number(point.time);
+        },
+        true,
+        false,
+      );
 
       markerElement.style.left = left;
       pointsFragment.appendChild(markerElement);

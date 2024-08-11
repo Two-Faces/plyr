@@ -13,8 +13,4 @@
     content: '\2044';
     margin-right: $plyr-control-spacing;
   }
-
-  @media (max-width: ($plyr-bp-md - 1px)) {
-    display: none;
-  }
 }

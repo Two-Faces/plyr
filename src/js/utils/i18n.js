@@ -16,7 +16,7 @@ const resources = {
 };
 
 const i18n = {
-  get(key = '', config = {}) {
+  get(key = '', config = {}, params = {}) {
     if (is.empty(key) || is.empty(config)) {
       return '';
     }
@@ -35,6 +35,10 @@ const i18n = {
       '{seektime}': config.seekTime,
       '{title}': config.title,
     };
+
+    if (Object.keys(params).length) {
+      replace['{realseektime}'] = params.realSeekTime;
+    }
 
     Object.entries(replace).forEach(([k, v]) => {
       string = replaceAll(string, k, v);

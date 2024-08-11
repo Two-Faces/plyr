@@ -1,0 +1,18 @@
+// ==========================================================================
+// Info
+// ==========================================================================
+
+$plyr-video-info-forward-background: var(
+    --plyr-video-info-forward-background,
+    linear-gradient(to right, rgba(0, 0, 0, .2), rgba(0, 0, 0, .7))
+) !default;
+
+$plyr-video-info-rewind-background: var(
+    --plyr-video-info-rewind-background,
+    linear-gradient(to left, rgba(0, 0, 0, .2), rgba(0, 0, 0, .7))
+) !default;
+
+$plyr-video-info-radius: var(--plyr-video-info-radius, 100%) !default;
+
+$plyr-video-info-text-color: var(--plyr-video-info-text-color, #fff) !default;
+$plyr-video-info-text-size: var(--plyr-video-info-text-size, 16px) !default;

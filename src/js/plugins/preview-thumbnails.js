@@ -69,9 +69,9 @@ const fitRatio = (ratio, outer) => {
   const result = {};
   if (ratio > targetRatio) {
     result.width = outer.width;
-    result.height = (1 / ratio) * outer.width;
+    result.height = Math.ceil((1 / ratio) * outer.width);
   } else {
-    result.height = outer.height;
+    result.height = Math.ceil(outer.height);
     result.width = ratio * outer.height;
   }
 
@@ -359,13 +359,8 @@ class PreviewThumbnails {
       this.setThumbContainerSizeAndPos();
     }
 
-    // Find the desired thumbnail index
-    // TODO: Handle a video longer than the thumbs where thumbNum is null
-    const thumbNum = this.thumbnails[0].frames.findIndex(
-      (frame) => this.seekTime >= frame.startTime && this.seekTime <= frame.endTime,
-    );
+    const thumbNum = this.getThumbNum();
     const hasThumb = thumbNum >= 0;
-    let qualityIndex = 0;
 
     // Show the thumb container if we're not scrubbing
     if (!this.mouseDown) {
@@ -377,12 +372,7 @@ class PreviewThumbnails {
       return;
     }
 
-    // Check to see if we've already downloaded higher quality versions of this image
-    this.thumbnails.forEach((thumbnail, index) => {
-      if (this.loadedImages.includes(thumbnail.frames[thumbNum].text)) {
-        qualityIndex = index;
-      }
-    });
+    const qualityIndex = this.getQualityIndex(thumbNum);
 
     // Only proceed if either thumb num or thumbfilename has changed
     if (thumbNum !== this.showingThumb) {
@@ -599,6 +589,34 @@ class PreviewThumbnails {
     }
   }
 
+  /**
+   * Find the desired thumbnail index
+   * TODO: Handle a video longer than the thumbs where thumbNum is null
+   * @returns {boolean|*|number}
+   */
+  getThumbNum = () => {
+    return this.thumbnails[0].frames.findIndex(
+      (frame) => this.seekTime >= frame.startTime && this.seekTime <= frame.endTime,
+    );
+  };
+
+  /**
+   * Check to see if we've already downloaded higher quality versions of this image
+   * @param thumbNum
+   * @returns {number}
+   */
+  getQualityIndex = (thumbNum) => {
+    let qualityIndex = 0;
+    // Check to see if we've already downloaded higher quality versions of this image
+    this.thumbnails.forEach((thumbnail, index) => {
+      if (this.loadedImages.includes(thumbnail.frames[thumbNum].text)) {
+        qualityIndex = index;
+      }
+    });
+
+    return qualityIndex;
+  };
+
   toggleThumbContainer = (toggle = false, clearShowing = false) => {
     const className = this.player.config.classNames.previewThumbnails.thumbContainerShown;
     this.elements.thumb.container.classList.toggle(className, toggle);
@@ -686,6 +704,28 @@ class PreviewThumbnails {
     // eslint-disable-next-line no-param-reassign
     previewImage.style.top = `-${frame.y * multiplier}px`;
   };
+
+  fixPreviewSize() {
+    if (!this.enabled || !this.loaded) {
+      return;
+    }
+
+    this.setScrubbingContainerSize();
+
+    this.seekTime = this.player.media.currentTime;
+    this.mouseDown = true;
+
+    const thumbNum = this.getThumbNum();
+    const qualityIndex = this.getQualityIndex(thumbNum);
+    const thumbnail = this.thumbnails[qualityIndex];
+    const frame = thumbnail.frames[thumbNum];
+
+    if (this.currentScrubbingImageElement) {
+      this.setImageSizeAndOffset(this.currentScrubbingImageElement, frame);
+    }
+
+    this.mouseDown = false;
+  }
 }
 
 export default PreviewThumbnails;

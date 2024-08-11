@@ -15,6 +15,10 @@ const defaults = {
   // Auto play (if supported)
   autoplay: false,
 
+  percentageRewindPlacement: 30,
+
+  timeClosePanelInfo: 300,
+
   // Only allow one media playing at once (vimeo only)
   autopause: true,
 
@@ -154,6 +158,7 @@ const defaults = {
     play: 'Play',
     pause: 'Pause',
     fastForward: 'Forward {seektime}s',
+    infoSeconds: '{realseektime} seconds',
     seek: 'Seek',
     seekLabel: '{currentTime} of {duration}',
     played: 'Played',
@@ -354,6 +359,7 @@ const defaults = {
     loading: 'plyr--loading',
     hover: 'plyr--hover',
     tooltip: 'plyr__tooltip',
+    tooltipSeek: 'plyr__tooltip--seek',
     cues: 'plyr__cues',
     marker: 'plyr__progress__marker',
     hidden: 'plyr__sr-only',
@@ -362,6 +368,16 @@ const defaults = {
     isTouch: 'plyr--is-touch',
     uiSupported: 'plyr--full-ui',
     noTransition: 'plyr--no-transition',
+    info: {
+      block: 'plyr__info',
+      forwardSeconds: 'plyr__info--forward',
+      rewindSeconds: 'plyr__info--rewind',
+      infoVisible: 'plyr__info--visible',
+      textSeconds: 'plyr__info__text',
+      icon: 'plyr__info__icon',
+      timecode: 'plyr__info__timecode',
+      timecodeVisible: 'plyr__info__timecode--visible',
+    },
     display: {
       time: 'plyr__time',
     },

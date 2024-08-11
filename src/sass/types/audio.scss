@@ -13,6 +13,10 @@
   border-radius: inherit;
   color: $plyr-audio-control-color;
   padding: $plyr-control-spacing;
+
+  &__buttons {
+    padding: 0;
+  }
 }
 
 // Control elements
@@ -56,6 +60,14 @@
 }
 
 // Progress
-.plyr--audio .plyr__progress__buffer {
-  color: $plyr-audio-progress-buffered-background;
+.plyr--audio {
+  .plyr__progress input[type='range'] {
+    &::-webkit-slider-runnable-track {
+      border-radius: calc(#{$plyr-range-track-height} / 2);;
+    }
+  }
+
+  .plyr__progress__buffer {
+    color: $plyr-audio-progress-buffered-background;
+  }
 }

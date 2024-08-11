@@ -25,6 +25,7 @@ import { closest } from './utils/arrays';
 import browser from './utils/browser';
 import { createElement, hasClass, removeElement, replaceElement, toggleClass, wrap } from './utils/elements';
 import { off, on, once, triggerEvent, unbindListeners } from './utils/events';
+import i18n from './utils/i18n';
 import is from './utils/is';
 import loadSprite from './utils/load-sprite';
 import { clamp } from './utils/numbers';
@@ -41,6 +42,11 @@ import { parseUrl } from './utils/urls';
 class Plyr {
   constructor(target, options) {
     this.timers = {};
+
+    this.timeoutInfoRewind = null;
+    this.timeoutInfoForward = null;
+
+    this.lastVibratedPoint = null;
 
     // State
     this.ready = false;
@@ -88,6 +94,13 @@ class Plyr {
       display: {},
       progress: {},
       inputs: {},
+      info: {
+        rewindBlock: null,
+        rewindText: null,
+        forwardBlock: null,
+        forwardText: null,
+        timecode: null,
+      },
       settings: {
         popup: null,
         menu: null,
@@ -297,6 +310,11 @@ class Plyr {
       ui.build.call(this);
     }
 
+    // Setup preview thumbnails if enabled
+    if (this.config.previewThumbnails.enabled) {
+      this.previewThumbnails = new PreviewThumbnails(this);
+    }
+
     // Container listeners
     this.listeners.container();
 
@@ -315,11 +333,6 @@ class Plyr {
 
     // Seek time will be recorded (in listeners.js) so we can prevent hiding controls for a few seconds after seek
     this.lastSeekTime = 0;
-
-    // Setup preview thumbnails if enabled
-    if (this.config.previewThumbnails.enabled) {
-      this.previewThumbnails = new PreviewThumbnails(this);
-    }
   }
 
   // ---------------------------------------
@@ -446,17 +459,87 @@ class Plyr {
   /**
    * Rewind
    * @param {Number} seekTime - how far to rewind in seconds. Defaults to the config.seekTime
+   * @param {Number} total - how many seconds were rewound. Defaults to config.seekTime.
    */
-  rewind = (seekTime) => {
+  rewind = (seekTime = null, total = null) => {
     this.currentTime -= is.number(seekTime) ? seekTime : this.config.seekTime;
+
+    this.openInfoBlock('rewind', total);
+
+    this.closeInfoBlock('rewind');
   };
 
   /**
    * Fast forward
    * @param {Number} seekTime - how far to fast forward in seconds. Defaults to the config.seekTime
+   * @param {Number} total - how many seconds were rewound. Defaults to config.seekTime.
    */
-  forward = (seekTime) => {
+  forward = (seekTime = null, total = null) => {
     this.currentTime += is.number(seekTime) ? seekTime : this.config.seekTime;
+
+    this.openInfoBlock('forward', total);
+
+    this.closeInfoBlock('forward');
+  };
+
+  closeInfoBlock = (type = 'rewind', force = false) => {
+    if (type === 'forward') {
+      if (this.timeoutInfoForward) {
+        clearTimeout(this.timeoutInfoForward);
+      }
+
+      this.timeoutInfoForward = setTimeout(
+        () => {
+          toggleClass(this.elements.info.forwardBlock, this.config.classNames.info.infoVisible, false);
+
+          this.elements.info.forwardBlock.opened = false;
+        },
+        force ? 0 : this.config.timeClosePanelInfo,
+      );
+    }
+
+    if (type === 'rewind') {
+      if (this.timeoutInfoRewind) {
+        clearTimeout(this.timeoutInfoRewind);
+      }
+
+      this.timeoutInfoRewind = setTimeout(
+        () => {
+          toggleClass(this.elements.info.rewindBlock, this.config.classNames.info.infoVisible, false);
+
+          this.elements.info.rewindBlock.opened = false;
+        },
+        force ? 0 : this.config.timeClosePanelInfo,
+      );
+    }
+  };
+
+  openInfoBlock = (type, seconds = null) => {
+    if (type === 'forward') {
+      if (this.elements.info.rewindBlock.opened) {
+        this.closeInfoBlock('rewind', true);
+      }
+
+      toggleClass(this.elements.info.forwardBlock, this.config.classNames.info.infoVisible, true);
+      this.elements.info.forwardBlock.opened = true;
+
+      this.elements.info.forwardText.innerText = i18n.get('infoSeconds', this.config, {
+        realSeekTime: is.number(seconds) ? seconds : this.config.seekTime,
+      });
+    }
+
+    if (type === 'rewind') {
+      if (this.elements.info.forwardBlock.opened) {
+        this.closeInfoBlock('forward', true);
+      }
+
+      toggleClass(this.elements.info.rewindBlock, this.config.classNames.info.infoVisible, true);
+      this.elements.info.rewindBlock.opened = true;
+
+      this.elements.info.rewindText.innerText = i18n.get('infoSeconds', this.config, {
+        realSeekTime: is.number(seconds) ? seconds : this.config.seekTime,
+      });
+    }
   };
 
   /**

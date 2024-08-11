@@ -1,0 +1,93 @@
+// --------------------------------------------------------------
+// Controls
+// --------------------------------------------------------------
+
+.plyr--video .plyr__info {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  height: 100%;
+  width: var(--width-info);
+
+  &__timecode {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 70px;
+    margin: auto;
+    height: 42px;
+    max-width: 300px;
+    width: max-content;
+    padding: 10px 12px;
+    border-radius: 16px;
+    color: #fff;
+    background: rgba(0,0,0,.8);
+    font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.1s;
+
+    &--visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  &--visible.plyr__info--rewind,
+  &--visible.plyr__info--forward {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &--visible.plyr__info--rewind svg {
+    animation: move-left-and-fade 1s infinite;
+  }
+
+  &--visible.plyr__info--forward svg {
+    animation: move-right-and-fade 1s infinite;
+  }
+
+  &--rewind,
+  &--forward {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(0, 0, 0, .2);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: 0.3s ease;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      fill: $plyr-video-info-text-color;
+      position: relative;
+    }
+  }
+
+  &__text {
+    color: $plyr-video-info-text-color;
+    font-size: $plyr-video-info-text-size;
+  }
+
+  &--rewind {
+    display: flex;
+    background: $plyr-video-info-rewind-background;
+    border-radius: 0 $plyr-video-info-radius $plyr-video-info-radius 0;
+    left: 0;
+  }
+
+  &--forward {
+    display: flex;
+    background: $plyr-video-info-forward-background;
+    border-radius: $plyr-video-info-radius 0 0 $plyr-video-info-radius;
+    right: 0;
+  }
+}

@@ -29,3 +29,33 @@
     opacity: 1;
   }
 }
+
+@keyframes move-left-and-fade {
+  0% {
+    left: 0;
+    opacity: 0.5;
+  }
+  50% {
+    left: -4px;
+    opacity: 1;
+  }
+  100% {
+    left: 0;
+    opacity: 0.5;
+  }
+}
+
+@keyframes move-right-and-fade {
+  0% {
+    right: 0;
+    opacity: 0.5;
+  }
+  50% {
+    right: -4px;
+    opacity: 1;
+  }
+  100% {
+    right: 0;
+    opacity: 0.5;
+  }
+}

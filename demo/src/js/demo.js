@@ -45,10 +45,7 @@ import toggleClass from './toggle-class';
       controls: [
         'progress',
         'play-large',
-        'pause-large',
-        'rewind',
         'play',
-        'fast-forward',
         'mute',
         'volume',
         'current-time',
@@ -96,30 +93,12 @@ import toggleClass from './toggle-class';
       markers: {
         enabled: true,
         points: [
-          { time: '200', label: 'Lorem ipsum' },
-          { time: '400', label: 'Dolor sit' },
-          { time: '600', label: 'Amet' },
-          { time: '800', label: 'Consectetur' },
-          { time: '1000', label: 'Adipiscing' },
-          {
-            time: '1200',
-            label: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-          },
-          {
-            time: '1400',
-            label:
-              'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
-          },
-          {
-            time: '1600',
-            label:
-              'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
-          },
-          {
-            time: '1800',
-            label:
-              'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
-          },
+          { time: '0', label: 'Начало' },
+          { time: '20', label: 'Первый день монтажа' },
+          { time: '60', label: 'Сделал нарезку' },
+          { time: '100', label: 'Шестой день монтажа' },
+          { time: '150', label: 'Наша команда' },
+          { time: '200', label: 'Разбор нескольких эффектов' },
         ],
       },
     });

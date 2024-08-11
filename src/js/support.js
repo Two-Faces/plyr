@@ -35,6 +35,26 @@ const support = {
     };
   },
 
+  getPositionClickOfContainer(event, player) {
+    const containerWidth = player.elements.container.offsetWidth;
+    // Calculate the cursor position relative to the container
+    const clickPosition = event.offsetX;
+    const percent = 1 / (100 / player.config.percentageRewindPlacement);
+    // Defining areas where a double click should not activate full screen mode
+    const leftBoundary = containerWidth * percent;
+    const rightBoundary = containerWidth * (1 - percent);
+
+    if (clickPosition <= leftBoundary) {
+      return 'left';
+    }
+
+    if (clickPosition >= rightBoundary) {
+      return 'right';
+    }
+
+    return 'center';
+  },
+
   // Picture-in-picture support
   // Safari & Chrome only currently
   pip: (() => {
@@ -50,11 +70,7 @@ const support = {
 
     // Chrome
     // https://developers.google.com/web/updates/2018/10/watch-video-using-picture-in-picture
-    if (document.pictureInPictureEnabled && !createElement('video').disablePictureInPicture) {
-      return true;
-    }
-
-    return false;
+    return document.pictureInPictureEnabled && !createElement('video').disablePictureInPicture;
   })(),
 
   // Airplay support

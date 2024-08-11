@@ -3,6 +3,7 @@
 // ==========================================================================
 
 import controls from './controls';
+import support, { getPositionClickOfContainer } from './support';
 import ui from './ui';
 import { repaint } from './utils/animation';
 import browser from './utils/browser';
@@ -19,10 +20,25 @@ class Listeners {
     this.focusTimer = null;
     this.lastKeyDown = null;
 
+    this.clickCount = 0;
+    this.clickTimer = null;
+    this.timeoutClick = 250;
+
     this.handleKey = this.handleKey.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
     this.setTabFocus = this.setTabFocus.bind(this);
     this.firstTouch = this.firstTouch.bind(this);
+  }
+
+  contextMenu(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  resizeHandler() {
+    const { player } = this;
+
+    player.previewThumbnails.fixPreviewSize();
   }
 
   // Handle key presses
@@ -113,6 +129,15 @@ class Listeners {
         event.stopPropagation();
       }
 
+      // Increasing the click counter
+      this.clickCount++;
+
+      if (player.playing) {
+        elements.controls.hover = true;
+      }
+
+      clearTimeout(this.clickTimer);
+
       switch (code) {
         case 'Digit0':
         case 'Digit1':
@@ -161,11 +186,13 @@ class Listeners {
           break;
 
         case 'ArrowRight':
-          player.forward();
+          player.lastSeekTime = Date.now();
+          player.forward(null, this.clickCount * player.config.seekTime);
           break;
 
         case 'ArrowLeft':
-          player.rewind();
+          player.lastSeekTime = Date.now();
+          player.rewind(null, this.clickCount * player.config.seekTime);
           break;
 
         case 'KeyF':
@@ -185,6 +212,11 @@ class Listeners {
         default:
           break;
       }
+
+      this.clickTimer = setTimeout(() => {
+        elements.controls.hover = false;
+        this.clickCount = 0;
+      }, this.timeoutClick);
 
       // Escape is handle natively when in full screen
       // So we only need to worry about non native
@@ -274,6 +306,12 @@ class Listeners {
     if (player.config.keyboard.global) {
       toggleListener.call(player, window, 'keydown keyup', this.handleKey, toggle, false);
     }
+
+    if (player.previewThumbnails) {
+      toggleListener.call(player, window, 'resize', this.resizeHandler, toggle, false);
+    }
+
+    toggleListener.call(player, player.elements.container, 'contextmenu', this.contextMenu, toggle, false);
 
     // Click anywhere closes menu
     toggleListener.call(player, document.body, 'click', this.toggleMenu, toggle);
@@ -451,29 +489,59 @@ class Listeners {
           return;
         }
 
-        // Touch devices will just show controls (if hidden)
-        if (player.touch && player.config.hideControls) {
-          return;
+        // Increasing the click counter
+        this.clickCount++;
+
+        if (player.playing) {
+          elements.controls.hover = true;
         }
 
-        if (player.ended) {
-          this.proxy(event, player.restart, 'restart');
-          this.proxy(
-            event,
-            () => {
-              silencePromise(player.play());
-            },
-            'play',
-          );
-        } else {
-          this.proxy(
-            event,
-            () => {
-              silencePromise(player.togglePlay());
-            },
-            'play',
-          );
+        const position = support.getPositionClickOfContainer(event, player);
+
+        if (this.clickCount > 1) {
+          const totalTime = (this.clickCount - 1) * player.config.seekTime;
+
+          switch (position) {
+            case 'left':
+              player.lastSeekTime = Date.now();
+              player.rewind(null, totalTime);
+              break;
+            case 'right':
+              player.lastSeekTime = Date.now();
+              player.forward(null, totalTime);
+              break;
+          }
         }
+
+        // Reset the previous timer if it was set
+        clearTimeout(this.clickTimer);
+
+        this.clickTimer = setTimeout(() => {
+          if (this.clickCount === 1 && !player.touch) {
+            // If one click - play/pause
+            if (player.ended) {
+              this.proxy(event, player.restart, 'restart');
+              this.proxy(
+                event,
+                () => {
+                  silencePromise(player.play());
+                },
+                'play',
+              );
+            } else {
+              this.proxy(
+                event,
+                () => {
+                  silencePromise(player.togglePlay());
+                },
+                'play',
+              );
+            }
+          }
+
+          elements.controls.hover = false;
+          this.clickCount = 0;
+        }, this.timeoutClick);
       });
     }
 
@@ -591,26 +659,6 @@ class Listeners {
 
     // Pause
     this.bind(elements.buttons.restart, 'click', player.restart, 'restart');
-
-    this.bind(
-      elements.buttons.dbClickForward,
-      'dblclick',
-      () => {
-        player.lastSeekTime = Date.now();
-        player.forward();
-      },
-      'dbClickForward',
-    );
-
-    this.bind(
-      elements.buttons.dbClickRewind,
-      'dblclick',
-      () => {
-        player.lastSeekTime = Date.now();
-        player.rewind();
-      },
-      'dbClickForward',
-    );
 
     // Rewind
     this.bind(
@@ -797,7 +845,7 @@ class Listeners {
     );
 
     // Seek tooltip
-    this.bind(elements.progress, 'mouseenter mouseleave mousemove', (event) =>
+    this.bind(elements.progress, 'mouseenter mouseleave mousemove touchmove touchstart touchend', (event) =>
       controls.updateSeekTooltip.call(player, event),
     );
 
