@@ -874,7 +874,7 @@ class Plyr {
    * Get current quality level
    */
   get quality() {
-    return this.media.quality;
+    return [this.media.quality, this.storage.get('quality'), this.config.quality.default].find(is.number);
   }
 
   /**

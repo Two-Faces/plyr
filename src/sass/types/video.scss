@@ -144,7 +144,7 @@ $embed-padding: (math.div(100, 16) * 9);
   // Offset icon to make the play button look right
   svg {
     position: absolute;
-    left: 0;
+    left: 2px;
     right: 0;
     top: 0;
     bottom: 0;
