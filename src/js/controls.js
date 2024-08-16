@@ -848,18 +848,21 @@ const controls = {
       const { label } = point;
 
       if (this.config.previewThumbnails.enabled && this.isVideo) {
-        if (!this.elements.display.markerContainer) {
-          const container = this.elements.progress.querySelector(
-            `.${this.config.classNames.previewThumbnails.thumbContainer}`,
-          );
+        const selectorContainer = `.${this.config.classNames.previewThumbnails.thumbContainer}`;
+        const container = this.elements.progress.querySelector(selectorContainer);
 
+        if (!this.elements.display.markerContainer) {
           const element = createElement('div', {
             class: this.config.classNames.previewThumbnails.markerContainer,
           });
 
           this.elements.display.markerContainer = element;
 
-          container.prepend(element);
+          if (container) {
+            container.prepend(element);
+          }
+        } else if (!this.elements.display.markerContainer.isConnected && container) {
+          container.prepend(this.elements.display.markerContainer);
         }
 
         if (this.elements.display.markerContainer.innerText !== label) {
