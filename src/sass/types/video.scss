@@ -9,10 +9,6 @@
   background: var(--plyr-video-background, $plyr-video-background);
   overflow: hidden;
 
-  &.plyr--menu-open {
-    overflow: visible;
-  }
-
   .plyr__controls__buttons {
     height: 48px;
   }

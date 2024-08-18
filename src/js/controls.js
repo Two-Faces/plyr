@@ -85,11 +85,6 @@ const controls = {
         duration: getElement.call(this, this.config.selectors.display.duration),
       };
 
-      // Seek tooltip
-      if (is.element(this.elements.progress)) {
-        this.elements.display.seekTooltip = this.elements.progress.querySelector(`.${this.config.classNames.tooltip}`);
-      }
-
       return true;
     } catch (error) {
       // Log it
@@ -512,7 +507,7 @@ const controls = {
     // Enter will fire a `click` event but we still need to manage focus
     // So we bind to keyup which fires after and set focus here
     on.call(this, menuItem, 'keyup', (event) => {
-      if (event.key !== 'Return') return;
+      if (event.key !== 'Enter') return;
 
       controls.focusFirstMenuItem.call(this, null, true);
     });
@@ -752,25 +747,20 @@ const controls = {
     if (
       !this.config.tooltips.seek ||
       !is.element(this.elements.inputs.seek) ||
-      !is.element(this.elements.display.seekTooltip) ||
+      !is.element(this.elements.info.timecode) ||
       this.duration === 0
     ) {
       return;
     }
 
-    const tipElement = this.elements.display.seekTooltip;
     const timecodeElement = this.elements.info.timecode;
     const timecodeVisibleClass = this.config.classNames.info.timecodeVisible;
-    const tipVisibleClass = `${this.config.classNames.tooltip}--visible`;
-    const toggleTip = (show) => toggleClass(tipElement, tipVisibleClass, show);
     const toggleTimecode = (show) => toggleClass(timecodeElement, timecodeVisibleClass, show);
     let percent = 0;
     const clientRect = this.elements.progress.getBoundingClientRect();
 
     // Replace tooltip of touch
     if (this.touch) {
-      toggleTip(false);
-
       if (is.event(event)) {
         const touch = event.changedTouches?.length ? event.changedTouches : event.touches;
 
@@ -824,30 +814,21 @@ const controls = {
       return;
     }
 
-    // Determine percentage, if already visible
     if (is.event(event)) {
       percent = (100 / clientRect.width) * (event.pageX - clientRect.left);
-    } else if (hasClass(tipElement, tipVisibleClass)) {
-      percent = parseFloat(tipElement.style.left, 10);
-    } else {
-      return;
+
+      // Set bounds
+      percent = Math.max(0, Math.min(100, percent));
     }
 
-    // Set bounds
-    percent = Math.max(0, Math.min(100, percent));
-
     const time = (this.duration / 100) * percent;
-
     // Display the time a click would seek to
-    tipElement.innerText = controls.formatTime(time);
-
     const point = controls.getPointFromTime.call(this, time);
+    const { label } = point || {};
 
     // Append the point label to the tooltip
-    if (point) {
-      const { label } = point;
-
-      if (this.config.previewThumbnails.enabled && this.isVideo) {
+    if (this.config.previewThumbnails.enabled && this.isVideo) {
+      if (label) {
         const selectorContainer = `.${this.config.classNames.previewThumbnails.thumbContainer}`;
         const container = this.elements.progress.querySelector(selectorContainer);
 
@@ -868,18 +849,21 @@ const controls = {
         if (this.elements.display.markerContainer.innerText !== label) {
           this.elements.display.markerContainer.innerText = label;
         }
-      } else if (!tipElement.innerText.includes(label)) {
-        tipElement.insertAdjacentHTML('afterbegin', `<span>${label}</span><br>`);
       }
-    }
+    } else if (is.event(event)) {
+      let text = controls.formatTime(time);
 
-    // Set position
-    tipElement.style.left = `${percent}%`;
+      if (label) {
+        text = `${text} - ${label}`;
+      }
 
-    // Show/hide the tooltip
-    // If the event is a moues in/out and percentage is inside bounds
-    if (is.event(event) && ['mouseenter', 'mouseleave'].includes(event.type)) {
-      toggleTip(event.type === 'mouseenter');
+      timecodeElement.innerText = text;
+
+      // Show/hide the tooltip
+      // If the event is a moues in/out and percentage is inside bounds
+      if (['mouseenter', 'mouseleave'].includes(event.type)) {
+        toggleTimecode(event.type !== 'mouseleave');
+      }
     }
   },
 
@@ -1266,8 +1250,11 @@ const controls = {
 
   // Show/hide menu
   toggleMenu(input) {
-    const { popup } = this.elements.settings;
-    const button = this.elements.buttons.settings;
+    const {
+      container,
+      settings: { popup },
+      buttons: { settings: button },
+    } = this.elements;
 
     // Menu and button are required
     if (!is.element(popup) || !is.element(button)) {
@@ -1277,6 +1264,13 @@ const controls = {
     // True toggle by default
     const { hidden } = popup;
     let show = hidden;
+    const right = container.clientWidth - button.offsetLeft - button.clientWidth;
+
+    if (this.isVideo) {
+      popup.style.right = `${right}px`;
+
+      popup.style.setProperty('--menu-max-height', `${container.clientHeight - 106}px`);
+    }
 
     if (is.boolean(input)) {
       show = input;
@@ -1310,6 +1304,8 @@ const controls = {
       controls.focusFirstMenuItem.call(this, null, true);
     } else if (!show && !hidden) {
       // If closing, re-focus the button
+      controls.showMenuPanel.call(this, 'home', false, false);
+
       setFocus.call(this, button, is.keyboardEvent(input));
     }
   },
@@ -1338,7 +1334,7 @@ const controls = {
   },
 
   // Show a panel in the menu
-  showMenuPanel(type = '', tabFocus = false) {
+  showMenuPanel(type = '', tabFocus = false, isAnimation = true) {
     const target = this.elements.container.querySelector(`#plyr-settings-${this.id}-${type}`);
 
     // Nothing to show, bail
@@ -1351,7 +1347,7 @@ const controls = {
     const current = Array.from(container.children).find((node) => !node.hidden);
 
     // If we can do fancy animations, we'll animate the height/width
-    if (support.transitions && !support.reducedMotion) {
+    if (support.transitions && !support.reducedMotion && isAnimation && this.isVideo) {
       // Set the current width as a base
       container.style.width = `${current.scrollWidth}px`;
       container.style.height = `${current.scrollHeight}px`;
@@ -1387,6 +1383,12 @@ const controls = {
 
     // Set attributes on target
     toggleHidden(target, false);
+
+    const menu = target.querySelector('[role="menu"]');
+
+    if (menu) {
+      menu.scrollTo(0, 0);
+    }
 
     // Focus the first item
     controls.focusFirstMenuItem.call(this, target, tabFocus);
@@ -1493,22 +1495,6 @@ const controls = {
         // Buffer progress
         progress.appendChild(createProgress.call(this, 'buffer'));
 
-        // TODO: Add loop display indicator
-
-        // Seek tooltip
-        if (this.config.tooltips.seek) {
-          const tooltip = createElement(
-            'span',
-            {
-              class: `${this.config.classNames.tooltip} ${this.config.classNames.tooltipSeek}`,
-            },
-            '00:00',
-          );
-
-          progress.appendChild(tooltip);
-          this.elements.display.seekTooltip = tooltip;
-        }
-
         this.elements.progress = progress;
         progressContainer.appendChild(this.elements.progress);
         container.appendChild(progressContainer);
@@ -1570,21 +1556,12 @@ const controls = {
 
       // Settings button / menu
       if (control === 'settings' && !is.empty(this.config.settings)) {
-        const wrapper = createElement(
-          'div',
-          extend({}, defaultAttributes, {
-            class: `${defaultAttributes.class} plyr__menu`.trim(),
-            hidden: '',
-          }),
-        );
-
-        wrapper.appendChild(
-          createButton.call(this, 'settings', {
-            'aria-haspopup': true,
-            'aria-controls': `plyr-settings-${data.id}`,
-            'aria-expanded': false,
-          }),
-        );
+        const menuButton = createButton.call(this, 'settings', {
+          class: defaultAttributes.class,
+          'aria-haspopup': true,
+          'aria-controls': `plyr-settings-${data.id}`,
+          'aria-expanded': false,
+        });
 
         const popup = createElement('div', {
           class: 'plyr__menu__container',
@@ -1648,11 +1625,17 @@ const controls = {
             hidden: '',
           });
 
+          const menuContainerHeader = createElement('div', {
+            class: 'plyr__menu__container__header',
+          });
+
           // Back button
           const backButton = createElement('button', {
             type: 'button',
             class: `${this.config.classNames.control} ${this.config.classNames.control}--back`,
           });
+
+          menuContainerHeader.appendChild(backButton);
 
           // Visible label
           backButton.appendChild(
@@ -1700,7 +1683,7 @@ const controls = {
           });
 
           // Add to pane
-          pane.appendChild(backButton);
+          pane.appendChild(menuContainerHeader);
 
           // Menu
           pane.appendChild(
@@ -1716,11 +1699,35 @@ const controls = {
         });
 
         popup.appendChild(inner);
-        wrapper.appendChild(popup);
-        containerButtonsRight.appendChild(wrapper);
+        container.appendChild(popup);
+        containerButtonsRight.appendChild(menuButton);
 
         this.elements.settings.popup = popup;
-        this.elements.settings.menu = wrapper;
+        this.elements.settings.menu = menuButton;
+
+        if (this.isAudio) {
+          toggleListener.call(
+            this,
+            popup,
+            'wheel',
+            (e) => {
+              const { deltaY } = e;
+
+              if (deltaY) {
+                e.preventDefault();
+              }
+
+              const element = e.target.getAttribute('role') === 'menu' ? e.target : e.target.closest('[role="menu"]');
+
+              element.scrollTo({
+                left: element.scrollLeft + parseFloat(deltaY) * 2,
+                behavior: 'smooth',
+              });
+            },
+            true,
+            false,
+          );
+        }
       }
 
       // Airplay button

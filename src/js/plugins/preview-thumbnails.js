@@ -106,10 +106,6 @@ class PreviewThumbnails {
 
   load = () => {
     // Toggle the regular seek tooltip
-    if (this.player.elements.display.seekTooltip) {
-      this.player.elements.display.seekTooltip.hidden = this.enabled;
-    }
-
     if (!this.enabled) return;
 
     this.getThumbnails().then(() => {

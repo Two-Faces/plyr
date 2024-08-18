@@ -61,9 +61,7 @@ import toggleClass from './toggle-class';
       keyboard: {
         global: true,
       },
-      captions: {
-        active: true,
-      },
+      settings: ['speed'],
       /* ads: {
         enabled: isProduction,
         publisherId: '918848828995742',
@@ -87,17 +85,17 @@ import toggleClass from './toggle-class';
           },
         ],
       },
-      markers: {
-        enabled: true,
-        points: [
-          { time: '0', label: 'Начало' },
-          { time: '20', label: 'Первый день монтажа' },
-          { time: '60', label: 'Сделал нарезку' },
-          { time: '100', label: 'Шестой день монтажа' },
-          { time: '150', label: 'Наша команда' },
-          { time: '200', label: 'Разбор нескольких эффектов' },
-        ],
-      },
+      // markers: {
+      //   enabled: true,
+      //   points: [
+      //     { time: '0', label: 'Начало' },
+      //     { time: '20', label: 'Первый день монтажа' },
+      //     { time: '60', label: 'Сделал нарезку' },
+      //     { time: '100', label: 'Шестой день монтажа' },
+      //     { time: '150', label: 'Наша команда' },
+      //     { time: '200', label: 'Разбор нескольких эффектов' },
+      //   ],
+      // },
     });
 
     // Expose for tinkering in the console

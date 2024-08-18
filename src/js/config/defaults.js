@@ -359,7 +359,6 @@ const defaults = {
     loading: 'plyr--loading',
     hover: 'plyr--hover',
     tooltip: 'plyr__tooltip',
-    tooltipSeek: 'plyr__tooltip--seek',
     cues: 'plyr__cues',
     marker: 'plyr__progress__marker',
     hidden: 'plyr__sr-only',

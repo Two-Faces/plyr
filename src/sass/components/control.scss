@@ -20,6 +20,11 @@
     height: $plyr-control-icon-size;
     pointer-events: none;
     width: $plyr-control-icon-size;
+    transition: transform 0.2s;
+  }
+
+  &[aria-expanded='true'] svg {
+    transform: rotate(90deg);
   }
 
   // Default focus

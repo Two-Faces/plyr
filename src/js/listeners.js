@@ -19,6 +19,7 @@ class Listeners {
     this.lastKey = null;
     this.focusTimer = null;
     this.lastKeyDown = null;
+    this.previewFocusElement = null;
 
     this.clickCount = 0;
     this.clickTimer = null;
@@ -282,11 +283,24 @@ class Listeners {
     // Remove all current
     removeCurrent();
 
+    if (type === 'blur') {
+      this.previewFocusElement = event.target;
+    }
+
     // Delay the adding of classname until the focus has changed
     // This event fires before the focusin event
     if (type !== 'focusout') {
       this.focusTimer = setTimeout(() => {
         const focused = document.activeElement;
+
+        if (this.previewFocusElement) {
+          const isPreviewSettingsMenu = this.previewFocusElement.closest('.plyr__menu__container');
+          const isFocusedSettingsMenu = focused.closest('.plyr__menu__container');
+
+          if (isPreviewSettingsMenu && !isFocusedSettingsMenu) {
+            controls.toggleMenu.call(this.player, false, false);
+          }
+        }
 
         // Ignore if current focus element isn't inside the player
         if (!elements.container.contains(focused)) {
@@ -791,6 +805,13 @@ class Listeners {
 
     // Escape closes menu
     this.bind(elements.settings.menu, 'keydown', (event) => {
+      if (event.key === 'Escape') {
+        controls.toggleMenu.call(player, event);
+      }
+    });
+
+    // Escape closes menu
+    this.bind(elements.settings.popup, 'keydown', (event) => {
       if (event.key === 'Escape') {
         controls.toggleMenu.call(player, event);
       }

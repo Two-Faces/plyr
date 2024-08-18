@@ -17,6 +17,10 @@
   &.plyr--audio {
     max-width: 480px;
   }
+
+  &--menu-open {
+    overflow: hidden;
+  }
 }
 
 .plyr__video-wrapper::after {
