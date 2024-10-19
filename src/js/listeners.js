@@ -725,6 +725,9 @@ class Listeners {
     // Captions toggle
     this.bind(elements.buttons.captions, 'click', () => player.toggleCaptions());
 
+    // Stream audio toggle
+    this.bind(elements.buttons.stream, 'click', () => player.toggleStream());
+
     // Download
     this.bind(
       elements.buttons.download,

@@ -275,6 +275,14 @@ const controls = {
         props.iconPressed = 'muted';
         break;
 
+      case 'stream':
+        props.toggle = true;
+        props.label = 'enableStream';
+        props.labelPressed = 'disableStream';
+        props.icon = 'headphone-off';
+        props.iconPressed = 'headphone-on';
+        break;
+
       case 'captions':
         props.toggle = true;
         props.label = 'enableCaptions';
@@ -1071,13 +1079,15 @@ const controls = {
         return sorting.indexOf(a) > sorting.indexOf(b) ? 1 : -1;
       })
       .forEach((quality) => {
-        controls.createMenuItem.call(this, {
-          value: quality,
-          list,
-          type,
-          title: controls.getLabel.call(this, 'quality', quality),
-          badge: getBadge(quality),
-        });
+        if (quality > 2) {
+          controls.createMenuItem.call(this, {
+            value: quality,
+            list,
+            type,
+            title: controls.getLabel.call(this, 'quality', quality),
+            badge: getBadge(quality),
+          });
+        }
       });
 
     controls.updateSetting.call(this, type, list);
@@ -1547,6 +1557,10 @@ const controls = {
             ),
           );
         }
+      }
+
+      if (control === 'stream' && this.enabledStream) {
+        containerButtonsRight.appendChild(createButton.call(this, 'stream', defaultAttributes));
       }
 
       // Toggle captions button

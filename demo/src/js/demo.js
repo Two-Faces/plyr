@@ -50,6 +50,7 @@ import toggleClass from './toggle-class';
         'volume',
         'current-time',
         'duration',
+        'stream',
         'settings',
         'fullscreen',
         'pip',
@@ -61,7 +62,7 @@ import toggleClass from './toggle-class';
       keyboard: {
         global: true,
       },
-      settings: ['speed'],
+      settings: ['speed', 'quality'],
       /* ads: {
         enabled: isProduction,
         publisherId: '918848828995742',
@@ -74,6 +75,11 @@ import toggleClass from './toggle-class';
         // Prevent Vimeo blocking plyr.io demo site
         referrerPolicy: 'no-referrer',
       },
+      quality: {
+        options: [2, 144, 240, 360, 480, 720, 1080],
+        forced: true,
+      },
+
       mediaMetadata: {
         title: 'View From A Blue Moon',
         album: 'Sports',

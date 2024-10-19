@@ -71,6 +71,10 @@ const defaults = {
   blankVideo: 'https://cdn.plyr.io/static/blank.mp4',
 
   // Quality default
+  stream: {
+    options: [false, true],
+  },
+
   quality: {
     default: 576,
     // The options to display in the UI, if available for the source media
@@ -384,6 +388,10 @@ const defaults = {
       value: 'plyr__menu__value',
       badge: 'plyr__badge',
       open: 'plyr--menu-open',
+    },
+    stream: {
+      enabled: 'plyr--stream-enabled',
+      active: 'plyr--stream-active',
     },
     captions: {
       enabled: 'plyr--captions-enabled',

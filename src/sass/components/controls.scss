@@ -7,6 +7,15 @@
   display: none;
 }
 
+.plyr--stream-active {
+  [role="menu"] button:last-of-type {
+    display: none !important;
+  }
+
+  [data-plyr="pip"] {
+    display: none !important;
+  }
+}
 // Playback controls
 .plyr__controls {
   display: flex;

@@ -109,6 +109,9 @@ class Plyr {
       },
     };
 
+    // Stream
+    this.streamToggled = null;
+
     // Captions
     this.captions = {
       active: null,
@@ -125,6 +128,7 @@ class Plyr {
     this.options = {
       speed: [],
       quality: [],
+      stream: [],
     };
 
     // Debugging
@@ -847,6 +851,14 @@ class Plyr {
       config.default,
     ].find(is.number);
 
+    const isOnStream = this.stream;
+
+    if (isOnStream && quality > 2 && this.enabledStream) {
+      quality = 2;
+
+      this.toggleStream(isOnStream, false);
+    }
+
     let updateStorage = true;
 
     if (!options.includes(quality)) {
@@ -855,6 +867,10 @@ class Plyr {
       quality = value;
 
       // Don't update storage if quality is not supported
+      updateStorage = false;
+    }
+
+    if (quality <= 2) {
       updateStorage = false;
     }
 
@@ -868,6 +884,14 @@ class Plyr {
     if (updateStorage) {
       this.storage.set({ quality });
     }
+  }
+
+  get enabledStream() {
+    return this.config.quality.options.filter((option) => option <= 2).length > 0;
+  }
+
+  get stream() {
+    return [this.media.stream, this.storage.get('stream')].find(is.boolean);
   }
 
   /**
@@ -1052,6 +1076,31 @@ class Plyr {
    */
   toggleCaptions(input) {
     captions.toggle.call(this, input, false);
+  }
+
+  toggleStream(input, isSetupQuality = true) {
+    const activeClass = this.config.classNames.stream.active;
+    // Get the next state
+    // If the method is called without parameter, toggle based on current value
+    const active = is.nullOrUndefined(input) ? !this.streamToggled : input;
+
+    // Update state and trigger event
+    if (active !== this.streamToggled) {
+      this.elements.buttons.stream.pressed = active;
+
+      // Add class hook
+      toggleClass(this.elements.container, activeClass, active);
+
+      this.streamToggled = active;
+
+      const optionStream = this.options.quality.find((option) => option <= 2);
+
+      if (optionStream && isSetupQuality) {
+        this.storage.set({ stream: active });
+
+        this.quality = active ? this.options.quality.find((option) => option <= 2) : this.storage.get('quality');
+      }
+    }
   }
 
   /**
