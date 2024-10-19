@@ -57,66 +57,6 @@ const html5 = {
     if (!is.empty(this.config.ratio)) {
       setAspectRatio.call(player);
     }
-
-    // Quality
-    Object.defineProperty(player.media, 'quality', {
-      get() {
-        // Get sources
-        const sources = html5.getSources.call(player);
-        const source = sources.find((s) => s.getAttribute('src') === player.source);
-
-        // Return size, if match is found
-        return source && Number(source.getAttribute('size'));
-      },
-      set(input) {
-        if (player.quality === input) {
-          return;
-        }
-
-        // If we're using an external handler...
-        if (player.config.quality.forced && is.function(player.config.quality.onChange)) {
-          player.config.quality.onChange(input);
-        } else {
-          // Get sources
-          const sources = html5.getSources.call(player);
-          // Get first match for requested size
-          const source = sources.find((s) => Number(s.getAttribute('size')) === input);
-
-          // No matching source found
-          if (!source) {
-            return;
-          }
-
-          // Get current state
-          const { currentTime, paused, preload, readyState, playbackRate } = player.media;
-
-          // Set new source
-          player.media.src = source.getAttribute('src');
-
-          // Prevent loading if preload="none" and the current source isn't loaded (#1044)
-          if (preload !== 'none' || readyState) {
-            // Restore time
-            player.once('loadedmetadata', () => {
-              player.speed = playbackRate;
-              player.currentTime = currentTime;
-
-              // Resume playing
-              if (!paused) {
-                silencePromise(player.play());
-              }
-            });
-
-            // Load new source
-            player.media.load();
-          }
-        }
-
-        // Trigger change event
-        triggerEvent.call(player, player.media, 'qualitychange', false, {
-          quality: input,
-        });
-      },
-    });
   },
 
   // Cancel current network requests

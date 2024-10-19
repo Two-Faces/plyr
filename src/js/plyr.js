@@ -853,12 +853,14 @@ class Plyr {
 
     const isOnStream = this.stream;
 
-    if (isOnStream && quality > 2 && this.enabledStream) {
-      quality = 2;
+    if (isOnStream && quality > 16 && this.enabledStream) {
+      quality = 16;
 
       this.toggleStream(isOnStream, false);
     }
 
+    const isChangedQuality = quality !== config.selected;
+    console.log(isChangedQuality);
     let updateStorage = true;
 
     if (!options.includes(quality)) {
@@ -870,35 +872,36 @@ class Plyr {
       updateStorage = false;
     }
 
-    if (quality <= 2) {
+    if (quality <= 16) {
       updateStorage = false;
     }
 
     // Update config
     config.selected = quality;
 
-    // Set quality
-    this.media.quality = quality;
-
     // Save to storage
     if (updateStorage) {
       this.storage.set({ quality });
     }
+
+    if (isChangedQuality && config.forced && is.function(config.onChange)) {
+      config.onChange(quality);
+    }
   }
 
   get enabledStream() {
-    return this.config.quality.options.filter((option) => option <= 2).length > 0;
+    return this.config.quality.options.filter((option) => option <= 16).length > 0;
   }
 
   get stream() {
-    return [this.media.stream, this.storage.get('stream')].find(is.boolean);
+    return [this.storage.get('stream')].find(is.boolean);
   }
 
   /**
    * Get current quality level
    */
   get quality() {
-    return [this.media.quality, this.storage.get('quality'), this.config.quality.default].find(is.number);
+    return [this.storage.get('quality'), this.config.quality.default].find(is.number);
   }
 
   /**
@@ -1093,12 +1096,12 @@ class Plyr {
 
       this.streamToggled = active;
 
-      const optionStream = this.options.quality.find((option) => option <= 2);
+      const optionStream = this.options.quality.find((option) => option <= 16);
 
       if (optionStream && isSetupQuality) {
         this.storage.set({ stream: active });
 
-        this.quality = active ? this.options.quality.find((option) => option <= 2) : this.storage.get('quality');
+        this.quality = active ? this.options.quality.find((option) => option <= 16) : this.storage.get('quality');
       }
     }
   }

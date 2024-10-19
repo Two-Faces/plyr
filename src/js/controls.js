@@ -1079,7 +1079,7 @@ const controls = {
         return sorting.indexOf(a) > sorting.indexOf(b) ? 1 : -1;
       })
       .forEach((quality) => {
-        if (quality > 2) {
+        if (quality > 16) {
           controls.createMenuItem.call(this, {
             value: quality,
             list,
